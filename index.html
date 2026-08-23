@@ -273,7 +273,7 @@ aside{min-height:0;display:flex;flex-direction:column}
 </header>
 <div class="layout">
   <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
-        <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time" value="10:00"></label></div>
+        <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">徒歩・直線距離をもとにした概算です。営業時間や混雑、乗換は含まれません。</p>
@@ -387,7 +387,7 @@ function routeOrder(){
 function dist(a,b,c,d){const R=6371, p=Math.PI/180, x=(c-a)*p, y=(d-b)*p; const z=Math.sin(x/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)**2; return 2*R*Math.asin(Math.sqrt(z));}
 [searchEl,groupEl,memberEl,categoryEl].forEach(e=>e.addEventListener('input',render));
 document.getElementById('departureTime').addEventListener('input',()=>{if(scheduleReady)renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));});
-document.getElementById('buildSchedule').onclick=()=>{if(!selected.length)return;scheduleReady=true;renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));};
+document.getElementById('buildSchedule').onclick=()=>{if(!selected.length)return;const now=new Date();document.getElementById('departureTime').value=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');scheduleReady=true;renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));};
 document.getElementById('clearRoute').onclick=()=>{selected=[];scheduleReady=false;updateRoute();render();};
 document.getElementById('near').onclick=()=>{
   if(!navigator.geolocation){alert('位置情報に対応していません');return;}
