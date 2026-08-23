@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pinqle — 推しが行った場所MAP</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@700;800&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9eef2;--surface:#edf2f6;--blue:#55a9ec;--blue-dark:#328fd8;--ink:#52616d;--muted:#8996a0;--light:#fff;--shadow:#c8d0d6}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;color:var(--ink);background:var(--bg)}
+header{padding:20px 24px 18px;background:var(--bg);position:relative;z-index:1000}
+.logo{display:flex;align-items:center;gap:12px;font-weight:850;font-size:23px;letter-spacing:.08em;color:#4c9fe1}
+.logo:before{content:"O";display:grid;place-items:center;width:48px;height:48px;border-radius:15px;color:#55a9ec;background:var(--surface);box-shadow:8px 8px 16px var(--shadow),-8px -8px 16px var(--light)}
+.sub{font-size:12px;color:var(--muted);margin:5px 0 0 61px;letter-spacing:.04em}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+input,select,button{height:42px;border:0;border-radius:13px;background:var(--surface);color:var(--ink);padding:0 14px;font-size:13px;outline:none;box-shadow:6px 6px 12px var(--shadow),-6px -6px 12px var(--light);transition:.18s ease}
+input{min-width:240px;flex:1;box-shadow:inset 4px 4px 8px #d2d9de,inset -4px -4px 8px #fff}
+input::placeholder{color:#a6b0b8}
+select{min-width:130px;appearance:auto}
+button{cursor:pointer;font-weight:650}
+button:hover:not(:disabled){color:var(--blue-dark);transform:translateY(-1px)}
+button:active:not(:disabled){transform:none;box-shadow:inset 4px 4px 8px #d0d8de,inset -4px -4px 8px #fff}
+#near{color:var(--blue-dark)}
+.routebar{display:flex;align-items:center;gap:12px;padding:12px 24px 18px;background:var(--bg);font-size:13px}
+.routebar strong{margin-right:auto;color:#71808b}.routebar button{height:38px}
+.routebar .primary{background:linear-gradient(145deg,#61b4f2,#489bdd);color:#fff;box-shadow:6px 6px 12px #c2ccd3,-6px -6px 12px #fff}
+.routebar .primary:hover:not(:disabled){color:#fff}
+.routebar button:disabled{opacity:.48;cursor:not-allowed;box-shadow:inset 2px 2px 5px #d0d8de,inset -2px -2px 5px #fff}
+.layout{display:grid;grid-template-columns:minmax(340px,390px) 1fr;gap:18px;height:calc(100vh - 177px);padding:0 18px 18px}
+#list{overflow:auto;padding:8px 9px 18px 7px;background:transparent}.count{font-size:12px;color:var(--muted);margin:4px 5px 15px;letter-spacing:.04em}
+.card{background:var(--surface);border:1px solid rgba(255,255,255,.55);border-radius:20px;padding:17px;margin:0 4px 17px;cursor:pointer;box-shadow:9px 9px 18px var(--shadow),-9px -9px 18px var(--light);transition:.18s ease}
+.card:hover{transform:translateY(-2px);box-shadow:11px 11px 21px #c3ccd2,-11px -11px 21px #fff}
+.card.selected{border:2px solid var(--blue);box-shadow:inset 3px 3px 7px #d1d9df,inset -3px -3px 7px #fff}
+.cardhead{display:flex;justify-content:space-between;gap:8px;align-items:center}.pick{height:31px;padding:0 11px;white-space:nowrap;color:var(--blue-dark);font-size:11px;border-radius:10px}
+.tag{display:inline-block;font-size:10px;color:#72818c;background:#e5ebef;border-radius:999px;padding:5px 9px;margin:0 5px 3px 0;box-shadow:inset 2px 2px 4px #d0d7dc,inset -2px -2px 4px #fff}
+.card h3{font-size:16px;color:#465661;margin:13px 0 6px}.meta{font-size:11px;color:var(--muted)}.desc{font-size:12px;line-height:1.65;margin-top:9px}
+.address{font-size:11px;color:#71808b;margin-top:9px;line-height:1.5}.source{display:inline-block;font-size:11px;margin-top:9px;color:var(--blue-dark);text-decoration:none}
+.verified{font-size:11px;color:#3c9b82;margin-top:9px}.unverified{font-size:11px;color:#b77b43;margin-top:9px}
+#map{height:100%;min-height:500px;border:8px solid var(--surface);border-radius:24px;overflow:hidden;box-shadow:10px 10px 20px var(--shadow),-10px -10px 20px var(--light)}
+.leaflet-control-zoom a{background:var(--surface)!important;color:var(--blue-dark)!important;border:0!important}.empty{padding:30px 10px;color:var(--muted);text-align:center}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#cbd4da;border-radius:99px}::-webkit-scrollbar-track{background:transparent}
+@media(max-width:760px){header{padding:15px}.logo:before{width:42px;height:42px}.sub{margin-left:55px}.controls{gap:10px}.controls input{min-width:100%}.controls select{flex:1;min-width:105px}.routebar{padding:8px 15px 15px;flex-wrap:wrap}.routebar strong{width:100%}.layout{grid-template-columns:1fr;height:auto;padding:0 12px 12px;gap:15px}.layout #list{height:48vh;order:2}.layout #map{height:52vh;min-height:400px;order:1}}
+</style>
+<style>
+/* Pastel editorial theme inspired by the supplied reference */
+:root{--mint:#a9ddeb;--mint-deep:#4b9eb8;--pink:#f6e7ef;--paper:#fbfcff;--grid:#dfe9f1;--ink:#3d8298;--muted:#78939d;--line:#d4e2ea}
+body{font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;font-weight:500;color:var(--ink);background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;background-position:0 163px}
+header{padding:20px 28px 17px;background:rgba(255,249,252,.94);border-bottom:0}
+.logo{justify-content:center;gap:10px;font-family:"Comfortaa","Nunito","Zen Maru Gothic",sans-serif;font-size:21px;font-weight:700;color:var(--mint-deep);letter-spacing:.12em}
+.logo:before{display:none}
+.sub{text-align:center;margin:3px 0 0;color:#7ea09d;font-size:10px;letter-spacing:.13em}
+.controls{justify-content:center;gap:9px;margin:17px auto 0;max-width:1180px}
+.controls input{order:5}
+#near{order:-1}
+input,select,button{font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;height:40px;border:1px solid #c6ddd9;border-radius:999px;background:rgba(255,255,255,.9);color:var(--ink);box-shadow:none;font-size:12px;letter-spacing:.03em}
+input{min-width:260px;box-shadow:none;border-color:#c9dcd9}
+input::placeholder{color:#9bafad}
+select{min-width:126px}
+button:hover:not(:disabled){color:#fff;background:var(--mint-deep);border-color:var(--mint-deep);transform:none}
+button:active:not(:disabled){box-shadow:none}
+#near{color:var(--mint-deep);background:#e2f3f0}
+.routebar{display:grid;padding:9px 8px 15px;background:rgba(255,249,252,.94);border:0;gap:9px;grid-template-columns:1fr auto auto}
+.routebar strong{color:#6c9290;font-size:11px;letter-spacing:.06em}
+.routebar button{height:35px}
+.routebar .primary{background:var(--mint-deep);color:#fff;border-color:var(--mint-deep);box-shadow:none}
+.routebar button:disabled{opacity:.43;box-shadow:none}
+.layout{grid-template-columns:minmax(340px,390px) 1fr;gap:22px;height:calc(100vh - 163px);padding:18px 24px 24px;background:rgba(255,249,252,.62)}
+aside{min-height:0;display:flex;flex-direction:column}
+#list{min-height:0;flex:1;overflow:auto}
+#list{padding:2px 8px 18px 2px}
+.count{color:#72928f;margin:4px 5px 14px;font-size:11px;letter-spacing:.1em}
+.notice{grid-column:1 / -1;display:block;width:100%;margin:2px 0 0;padding:2px 0;color:#c15f78;background:transparent;font-size:11px;line-height:1.7;letter-spacing:.02em}
+.suggestion{grid-column:1 / -1;color:#3f8298;font-size:12px;font-weight:700;line-height:1.8;white-space:pre-line;padding:7px 10px;border-left:4px solid #a9ddeb;background:rgba(255,255,255,.58);border-radius:8px}
+.suggestion:empty{display:none}
+.card{position:relative;background:#e8f6fb;border:1px solid #cfe7ef;border-radius:28px 18px 30px 20px;padding:18px;margin:0 5px 18px;box-shadow:none;overflow:hidden}
+.card:after{content:"";position:absolute;width:74px;height:74px;border-radius:50%;right:-30px;bottom:-36px;background:rgba(139,202,196,.22)}
+.card:nth-of-type(even){background:#e8f6fb;border-color:#cfe7ef;border-radius:18px 30px 20px 28px}
+.card:hover{transform:translateY(-2px);box-shadow:0 9px 0 rgba(36,126,119,.06)}
+.card.selected{background:#f8dce8;border:2px solid #d889aa;box-shadow:0 0 0 3px rgba(216,137,170,.16),0 8px 0 rgba(170,92,124,.08)}
+.pick{height:30px;color:var(--mint-deep);background:#fff;border-color:#badad5;border-radius:999px;font-size:10px}
+.card.selected .pick{color:#fff;background:#d889aa;border-color:#d889aa;box-shadow:0 3px 0 rgba(170,92,124,.18)}
+.tag{font-size:9px;color:var(--mint-deep);background:rgba(255,255,255,.72);border:1px solid rgba(86,159,152,.25);border-radius:999px;padding:5px 9px;box-shadow:none}
+.card h3{font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;font-weight:700;color:#3d8298;font-size:16px;letter-spacing:.03em}
+.meta{color:#78918f;font-size:10px;letter-spacing:.04em}.desc{font-size:11px;line-height:1.8;color:#557a77}
+.address{font-size:10px;color:#688b88}.source{position:relative;z-index:1;color:var(--mint-deep);font-size:10px;border-bottom:1px solid #7bb8b2;padding-bottom:2px}
+.verified{color:#278b75}.unverified{color:#a67463}
+#map{border:12px solid var(--mint);border-radius:32px 18px 34px 20px;box-shadow:none;outline:7px solid var(--paper);min-height:500px}
+#map{background:#e8f4f2}
+#map .leaflet-tile-pane{filter:saturate(.72) brightness(1.04) contrast(1.04) hue-rotate(3deg)}
+#map .leaflet-control-zoom{border:0!important;border-radius:14px;overflow:hidden;box-shadow:0 3px 10px rgba(47,126,119,.18)}
+#map .leaflet-control-zoom a{color:#328d84;background:#fff;border:0;font-family:"Nunito",sans-serif}
+.leaflet-control-zoom a{background:#fff!important;color:var(--mint-deep)!important}
+::-webkit-scrollbar-thumb{background:#a9d5d0}
+@media(max-width:760px){header{padding:14px}.logo{justify-content:flex-start}.sub{text-align:left;margin-left:45px}.controls{justify-content:stretch}.controls input{order:0;min-width:100%}.controls select{min-width:105px}.routebar{padding:7px 14px 14px}.layout{padding:15px 12px 14px;gap:20px}.layout #map{border-width:9px;border-radius:24px 14px 26px 16px}.card{margin-left:2px;margin-right:2px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Pinqle</div>
+  <div class="sub">推しの足跡をつなぐ旅</div>
+  <div class="controls">
+    <input id="search" placeholder="店名・場所・メンバーで検索">
+    <select id="group"><option value="">グループ</option></select>
+    <select id="member"><option value="">メンバー</option></select>
+    <select id="category"><option value="">ジャンル</option></select>
+    <button id="near">現在地に近い順</button>
+  </div>
+</header>
+<div class="layout">
+  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="openRoute" class="primary" disabled>Google Mapsでルートを開く</button><button id="clearRoute" disabled>選択解除</button><span id="suggestion" class="suggestion"></span><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div id="list"></div></aside>
+  <main id="map"></main>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let all=[], markers=[], userPos=null, selected=[];
+const map=L.map('map').setView([35.6812,139.7671],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const groupEl=document.getElementById('group');
+const memberEl=document.getElementById('member');
+const categoryEl=document.getElementById('category');
+const searchEl=document.getElementById('search');
+
+fetch('data.json').then(r=>r.json()).then(d=>{
+  all=d;
+  [...new Set(d.map(x=>x.group))].sort().forEach(x=>groupEl.insertAdjacentHTML('beforeend',`<option>${x}</option>`));
+  [...new Set(d.flatMap(x=>x.members||[x.member]).filter(Boolean))].sort().forEach(x=>memberEl.insertAdjacentHTML('beforeend',`<option>${x}</option>`));
+  [...new Set(d.map(x=>x.category))].sort().forEach(x=>categoryEl.insertAdjacentHTML('beforeend',`<option>${x}</option>`));
+  render();
+});
+
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function filtered(){
+  const q=searchEl.value.trim().toLowerCase(), g=groupEl.value, member=memberEl.value, c=categoryEl.value;
+  return all.filter(x=>{
+    const members=x.members||[x.member];
+    const text=[x.name,x.group,...members,x.area,x.category,x.description].join(' ').toLowerCase();
+    return (!q||text.includes(q))&&(!g||x.group===g)&&(!member||members.includes(member))&&(!c||x.category===c);
+  });
+}
+function render(){
+  markers.forEach(m=>map.removeLayer(m)); markers=[];
+  let rows=filtered();
+  if(userPos) rows=rows.slice().sort((a,b)=>dist(userPos.lat,userPos.lng,a.lat,a.lng)-dist(userPos.lat,userPos.lng,b.lat,b.lng));
+  const list=document.getElementById('list');
+  list.innerHTML=`<div class="count">${rows.length}件のスポット</div>`;
+  if(!rows.length){list.innerHTML+='<div class="empty">該当するスポットがありません。</div>';return;}
+  rows.forEach(x=>{
+    const m=L.marker([x.lat,x.lng]).addTo(map);
+    const memberNames=(x.members||[x.member]).join(' / ');
+    m.bindPopup(`<b>${escapeHtml(x.name)}</b><br>${escapeHtml(x.group)} / ${escapeHtml(memberNames)}<br>${escapeHtml(x.category)}<br><small>${escapeHtml(x.description)}</small>`);
+    markers.push(m);
+    const card=document.createElement('article'); card.className='card'+(selected.includes(x.id)?' selected':'');
+    card.innerHTML=`<div class="cardhead"><div><span class="tag">${escapeHtml(x.group)}</span><span class="tag">${escapeHtml(x.category)}</span></div><button class="pick" type="button">${selected.includes(x.id)?'選択済み':'ルートに追加'}</button></div>
+      <h3>${escapeHtml(x.name)}</h3><div class="meta">${escapeHtml(memberNames)} ・ ${escapeHtml(x.area)}</div>
+      ${x.address?`<div class="address">📍 ${escapeHtml(x.address)}</div>`:''}
+      <div class="desc">${escapeHtml(x.description)}</div>
+      <div class="${x.verified?'verified':'unverified'}">${x.verified?'✓ 出典確認済み':'△ 非公式情報のため要確認'}</div>
+      ${x.source?`<a class="source" href="${escapeHtml(x.source)}" target="_self" onclick="event.stopPropagation()">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:''}`;
+    card.onclick=e=>{if(e.target.closest('.pick'))return;map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
+    card.querySelector('.pick').onclick=()=>togglePlace(x.id);
+    list.appendChild(card);
+  });
+}
+function togglePlace(id){
+  if(selected.includes(id)) selected=selected.filter(x=>x!==id);
+  else if(selected.length<5) selected=[...selected,id];
+  else {alert('選択できるのは5地点までです。');return;}
+  updateRoute();render();
+}
+function updateRoute(){
+  document.getElementById('routeCount').textContent=`${selected.length} / 5地点を選択`;
+  document.getElementById('openRoute').disabled=selected.length<1;
+  document.getElementById('clearRoute').disabled=!selected.length;
+  const el=document.getElementById('suggestion');
+  if(selected.length<1){el.textContent='';return;}
+  const ordered=routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean);
+  el.textContent=`おすすめ巡回順\n${ordered.map((x,i)=>`${i+1}. ${x.name}`).join('\n')}`;
+}
+function routeOrder(){
+  const remaining=selected.slice(); const result=[];
+  let origin=userPos||(()=>{const x=all.find(s=>s.id===remaining[0]);return x?{lat:x.lat,lng:x.lng}:null})();
+  while(remaining.length){let best=0,bestD=Infinity;remaining.forEach((id,i)=>{const s=all.find(x=>x.id===id);const d=origin?dist(origin.lat,origin.lng,s.lat,s.lng):i;if(d<bestD){bestD=d;best=i;}});const id=remaining.splice(best,1)[0];result.push(id);const s=all.find(x=>x.id===id);origin={lat:s.lat,lng:s.lng};}
+  return result;
+}
+function dist(a,b,c,d){const R=6371, p=Math.PI/180, x=(c-a)*p, y=(d-b)*p; const z=Math.sin(x/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)**2; return 2*R*Math.asin(Math.sqrt(z));}
+[searchEl,groupEl,memberEl,categoryEl].forEach(e=>e.addEventListener('input',render));
+document.getElementById('clearRoute').onclick=()=>{selected=[];updateRoute();render();};
+document.getElementById('openRoute').onclick=()=>{
+  const spots=routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean);
+  if(spots.length<2)return;
+  const point=x=>`${x.lat},${x.lng}`;
+  const params=new URLSearchParams({api:'1',origin:point(spots[0]),destination:point(spots.at(-1)),travelmode:'walking'});
+  if(spots.length>2)params.set('waypoints',spots.slice(1,-1).map(point).join('|'));
+  window.open(`https://www.google.com/maps/dir/?${params}`,'_blank','noopener');
+};
+document.getElementById('near').onclick=()=>{
+  if(!navigator.geolocation){alert('位置情報に対応していません');return;}
+  navigator.geolocation.getCurrentPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};render();map.setView([userPos.lat,userPos.lng],13);},()=>alert('位置情報を取得できませんでした。'));
+};
+</script>
+</body>
+</html>
