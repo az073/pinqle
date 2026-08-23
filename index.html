@@ -280,7 +280,7 @@ aside{min-height:0;display:flex;flex-direction:column}
         <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
-        <p class="schedule-note">徒歩・直線距離をもとにした概算です。営業時間や混雑、乗換は含まれません。</p>
+        <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
       </section><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div id="list"></div></aside>
   <main id="map"></main>
 </div>
@@ -358,8 +358,10 @@ function formatTime(minutes){
 function stayMinutes(spot){
   return {飲食店:60,カフェ:45,ショップ:30,体験スポット:60,温泉:120,撮影地:20}[spot.category]||30;
 }
-function walkMinutes(from,to){
-  return Math.max(3,Math.round(dist(from.lat,from.lng,to.lat,to.lng)*1.3/4.5*60));
+function travelEstimate(from,to){
+  const kilometers=dist(from.lat,from.lng,to.lat,to.lng)*1.3;
+  if(kilometers<=1.5)return {minutes:Math.max(3,Math.round(kilometers/4.5*60)),label:'徒歩'};
+  return {minutes:Math.max(20,Math.round(kilometers*2.5+12)),label:'電車・徒歩'};
 }
 function renderSchedule(ordered){
   const box=document.getElementById('schedule');
@@ -372,11 +374,11 @@ function renderSchedule(ordered){
   let previous=userPos, travelTotal=0, stayTotal=0;
   const rows=[];
   ordered.forEach((spot)=>{
-    const travel=previous?walkMinutes(previous,spot):0;
-    clock+=travel; travelTotal+=travel;
+    const travel=previous?travelEstimate(previous,spot):null;
+    clock+=travel?.minutes||0; travelTotal+=travel?.minutes||0;
     const arrive=clock, stay=stayMinutes(spot);
     clock+=stay; stayTotal+=stay;
-    rows.push('<li><time>'+formatTime(arrive)+'</time><div><strong>'+escapeHtml(spot.name)+'</strong><span>'+(travel?'徒歩 約'+travel+'分 ・ ':'')+spot.category+'で約'+stay+'分</span><small>'+formatTime(arrive)+'〜'+formatTime(clock)+'</small></div></li>');
+    rows.push('<li><time>'+formatTime(arrive)+'</time><div><strong>'+escapeHtml(spot.name)+'</strong><span>'+(travel?travel.label+' 約'+travel.minutes+'分 ・ ':'')+spot.category+'で約'+stay+'分</span><small>'+formatTime(arrive)+'〜'+formatTime(clock)+'</small></div></li>');
     previous=spot;
   });
   summary.textContent=(userPos?'現在地から':'最初のスポットから')+'、移動約'+travelTotal+'分＋滞在約'+stayTotal+'分。終了予定 '+formatTime(clock);
