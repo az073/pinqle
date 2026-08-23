@@ -445,7 +445,7 @@ function renderSchedule(ordered){
     rows.push('<li><time>'+formatTime(arrive)+'</time><div><strong>'+escapeHtml(spot.name)+'</strong><span>'+(travel?travel.label+' 約'+travel.minutes+'分 ・ ':'')+spot.category+'で約'+stay+'分</span><small>'+formatTime(arrive)+'〜'+formatTime(clock)+'</small></div></li>');
     previous=spot;
   });
-  summary.textContent='終了予定 '+formatTime(clock);
+  summary.hidden=true; summary.textContent='';
   timeline.innerHTML=rows.join('');
 }
 function routeOrder(){
