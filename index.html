@@ -272,7 +272,7 @@ aside{min-height:0;display:flex;flex-direction:column}
   </div>
 </header>
 <div class="layout">
-  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><button id="openRoute" disabled>Google Mapsでルートを開く</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
+  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
         <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time" value="10:00"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
@@ -344,7 +344,6 @@ function togglePlace(id){
 function updateRoute(){
   document.getElementById('routeCount').textContent=selected.length+' / 5地点を選択';
   document.getElementById('buildSchedule').disabled=selected.length<1;
-  document.getElementById('openRoute').disabled=selected.length<1;
   document.getElementById('clearRoute').disabled=!selected.length;
   if(!selected.length||!scheduleReady)renderSchedule([]);
 }
@@ -390,14 +389,6 @@ function dist(a,b,c,d){const R=6371, p=Math.PI/180, x=(c-a)*p, y=(d-b)*p; const 
 document.getElementById('departureTime').addEventListener('input',()=>{if(scheduleReady)renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));});
 document.getElementById('buildSchedule').onclick=()=>{if(!selected.length)return;scheduleReady=true;renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));};
 document.getElementById('clearRoute').onclick=()=>{selected=[];scheduleReady=false;updateRoute();render();};
-document.getElementById('openRoute').onclick=()=>{
-  const spots=routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean);
-  if(spots.length<2)return;
-  const point=x=>`${x.lat},${x.lng}`;
-  const params=new URLSearchParams({api:'1',origin:point(spots[0]),destination:point(spots.at(-1)),travelmode:'walking'});
-  if(spots.length>2)params.set('waypoints',spots.slice(1,-1).map(point).join('|'));
-  window.open(`https://www.google.com/maps/dir/?${params}`,'_blank','noopener');
-};
 document.getElementById('near').onclick=()=>{
   if(!navigator.geolocation){alert('位置情報に対応していません');return;}
   navigator.geolocation.getCurrentPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};scheduleReady=false;updateRoute();render();map.setView([userPos.lat,userPos.lng],13);},()=>alert('位置情報を取得できませんでした。'));
