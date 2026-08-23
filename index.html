@@ -506,3 +506,9 @@ document.getElementById('near').onclick=()=>{
 <style>
 .schedule-head input[type="time"]{border-radius:4px;font-weight:700;}
 </style>
+
+<style>
+/* ネイティブ時刻入力の既定スタイルを上書き */
+#departureTime{border-radius:0!important;font-weight:800!important;color:#2f7086!important;}
+#departureTime::-webkit-datetime-edit,#departureTime::-webkit-datetime-edit-hour-field,#departureTime::-webkit-datetime-edit-minute-field{font-weight:800!important;}
+</style>
