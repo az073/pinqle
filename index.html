@@ -249,6 +249,15 @@ aside{min-height:0;display:flex;flex-direction:column}
   .schedule-timeline li{padding-top:5px}
 }
 </style>
+
+<style>
+.routebar{grid-template-columns:1fr auto auto auto}
+@media(max-width:760px){
+  .routebar #buildSchedule{grid-column:1 / 2}
+  .routebar #openRoute{grid-column:2 / 3}
+  .routebar #clearRoute{grid-column:1 / -1;height:34px}
+}
+</style>
 </head>
 <body>
 <header>
@@ -263,7 +272,7 @@ aside{min-height:0;display:flex;flex-direction:column}
   </div>
 </header>
 <div class="layout">
-  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="openRoute" class="primary" disabled>Google Mapsでルートを開く</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
+  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="buildSchedule" class="primary" disabled>旅程をつくる</button><button id="openRoute" disabled>Google Mapsでルートを開く</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
         <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time" value="10:00"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
@@ -273,7 +282,7 @@ aside{min-height:0;display:flex;flex-direction:column}
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-let all=[], markers=[], userPos=null, selected=[];
+let all=[], markers=[], userPos=null, selected=[], scheduleReady=false;
 const map=L.map('map').setView([35.6812,139.7671],11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   attribution:'&copy; OpenStreetMap contributors'
@@ -329,14 +338,15 @@ function togglePlace(id){
   if(selected.includes(id)) selected=selected.filter(x=>x!==id);
   else if(selected.length<5) selected=[...selected,id];
   else {alert('選択できるのは5地点までです。');return;}
+  scheduleReady=false;
   updateRoute();render();
 }
 function updateRoute(){
   document.getElementById('routeCount').textContent=selected.length+' / 5地点を選択';
+  document.getElementById('buildSchedule').disabled=selected.length<1;
   document.getElementById('openRoute').disabled=selected.length<1;
   document.getElementById('clearRoute').disabled=!selected.length;
-  if(selected.length<1){renderSchedule([]);return;}
-  renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));
+  if(!selected.length||!scheduleReady)renderSchedule([]);
 }
 function formatTime(minutes){
   const day=Math.floor(minutes/1440), clock=minutes%1440;
@@ -377,8 +387,9 @@ function routeOrder(){
 }
 function dist(a,b,c,d){const R=6371, p=Math.PI/180, x=(c-a)*p, y=(d-b)*p; const z=Math.sin(x/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)**2; return 2*R*Math.asin(Math.sqrt(z));}
 [searchEl,groupEl,memberEl,categoryEl].forEach(e=>e.addEventListener('input',render));
-document.getElementById('departureTime').addEventListener('input',()=>{if(selected.length)updateRoute();});
-document.getElementById('clearRoute').onclick=()=>{selected=[];updateRoute();render();};
+document.getElementById('departureTime').addEventListener('input',()=>{if(scheduleReady)renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));});
+document.getElementById('buildSchedule').onclick=()=>{if(!selected.length)return;scheduleReady=true;renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));};
+document.getElementById('clearRoute').onclick=()=>{selected=[];scheduleReady=false;updateRoute();render();};
 document.getElementById('openRoute').onclick=()=>{
   const spots=routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean);
   if(spots.length<2)return;
@@ -389,7 +400,7 @@ document.getElementById('openRoute').onclick=()=>{
 };
 document.getElementById('near').onclick=()=>{
   if(!navigator.geolocation){alert('位置情報に対応していません');return;}
-  navigator.geolocation.getCurrentPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};render();map.setView([userPos.lat,userPos.lng],13);},()=>alert('位置情報を取得できませんでした。'));
+  navigator.geolocation.getCurrentPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};scheduleReady=false;updateRoute();render();map.setView([userPos.lat,userPos.lng],13);},()=>alert('位置情報を取得できませんでした。'));
 };
 </script>
 </body>
