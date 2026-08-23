@@ -262,6 +262,10 @@ aside{min-height:0;display:flex;flex-direction:column}
 <style>
 .card:after{display:none}
 </style>
+
+<style>
+aside > .count{flex:none;margin:4px 7px 8px;padding:0}
+</style>
 </head>
 <body>
 <header>
@@ -281,7 +285,7 @@ aside{min-height:0;display:flex;flex-direction:column}
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
-      </section><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div id="list"></div></aside>
+      </section><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div id="listCount" class="count">0件のスポット</div><div id="list"></div></aside>
   <main id="map"></main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -319,8 +323,9 @@ function render(){
   let rows=filtered();
   if(userPos) rows=rows.slice().sort((a,b)=>dist(userPos.lat,userPos.lng,a.lat,a.lng)-dist(userPos.lat,userPos.lng,b.lat,b.lng));
   const list=document.getElementById('list');
-  list.innerHTML=`<div class="count">${rows.length}件のスポット</div>`;
-  if(!rows.length){list.innerHTML+='<div class="empty">該当するスポットがありません。</div>';return;}
+  document.getElementById('listCount').textContent=rows.length+'件のスポット';
+  list.innerHTML='';
+  if(!rows.length){list.innerHTML='<div class="empty">該当するスポットがありません。</div>';return;}
   rows.forEach(x=>{
     const m=L.marker([x.lat,x.lng]).addTo(map);
     const memberNames=(x.members||[x.member]).join(' / ');
