@@ -386,8 +386,8 @@ function render(){
       <div class="desc">${escapeHtml(x.description)}</div>
       <div class="${x.verified?'verified':'unverified'}">${x.verified?'✓ 出典確認済み':'△ 非公式情報のため要確認'}</div>
       ${x.verified&&sourceUrl?`<a class="source" href="${escapeHtml(sourceUrl)}" target="_self" rel="noopener">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:x.verified&&x.sourceTitle?`<div class="source source-text">出典：${escapeHtml(x.sourceTitle)}</div>`:''}`;
-    const row=document.createElement('div'); row.className='spot-row'+(selected.includes(x.id)?' selected':'');
-    const isStartWithoutLocation=!userPos&&selected[0]===x.id;
+    const isStartWithoutLocation=!userPos&&selected.indexOf(x.id)===0;
+    const row=document.createElement('div'); row.className='spot-row'+(selected.includes(x.id)?' selected':'')+(isStartWithoutLocation?' route-start':'');
     const pick=document.createElement('button'); pick.className='pick'+(isStartWithoutLocation?' start':''); pick.type='button'; pick.setAttribute('aria-label',isStartWithoutLocation?'最初のスポット（ルートから外す）':selected.includes(x.id)?'ルートから外す':'ルートに追加'); pick.textContent=isStartWithoutLocation?'1':'✓';
     card.onclick=e=>{if(e.target.closest('.pick,.source'))return;map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
     pick.onclick=()=>togglePlace(x.id);
@@ -490,4 +490,10 @@ document.getElementById('near').onclick=()=>{
 
 <style>
 .pick.start{font-size:12px;font-weight:800;}
+</style>
+
+<style>
+/* 現在地情報OFF時の出発スポット */
+.spot-row.route-start .pick{font-size:0!important;}
+.spot-row.route-start .pick::after{content:"1";font-size:12px;font-weight:800;line-height:1;}
 </style>
