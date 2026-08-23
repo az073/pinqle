@@ -315,7 +315,7 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
     <select id="group"><option value="">グループ</option></select>
     <select id="member"><option value="">メンバー</option></select>
     <select id="category"><option value="">ジャンル</option></select>
-    <button id="near">現在地に近い順</button>
+    <button id="near" type="button" aria-pressed="false">現在地情報：OFF</button>
   </div>
 </header>
 <div class="layout">
@@ -400,7 +400,15 @@ function togglePlace(id){
   scheduleReady=false;
   updateRoute();render();
 }
+function updateLocationButton(){
+  const button=document.getElementById('near');
+  const enabled=Boolean(userPos);
+  button.textContent='現在地情報：'+(enabled?'ON':'OFF');
+  button.classList.toggle('is-on',enabled);
+  button.setAttribute('aria-pressed',String(enabled));
+}
 function updateRoute(){
+  updateLocationButton();
   document.getElementById('routeCount').textContent=selected.length+' / 10地点を選択';
   document.getElementById('buildSchedule').disabled=selected.length<1;
   document.getElementById('clearRoute').disabled=!selected.length;
@@ -451,6 +459,12 @@ document.getElementById('departureTime').addEventListener('input',()=>{if(schedu
 document.getElementById('buildSchedule').onclick=()=>{if(!selected.length)return;const now=new Date();document.getElementById('departureTime').value=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');scheduleReady=true;renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));};
 document.getElementById('clearRoute').onclick=()=>{selected=[];scheduleReady=false;updateRoute();render();};
 document.getElementById('near').onclick=()=>{
+  if(userPos){
+    userPos=null;
+    updateRoute();render();
+    if(scheduleReady&&selected.length)renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));
+    return;
+  }
   if(!navigator.geolocation){alert('位置情報に対応していません');return;}
   navigator.geolocation.getCurrentPosition(p=>{
     const wasShowingSchedule=scheduleReady;
@@ -466,4 +480,9 @@ document.getElementById('near').onclick=()=>{
 <style>
 /* 出典URLがない場合はリンク風の下線を表示しない */
 .card .source.source-text{border-bottom:0!important;text-decoration:none!important;}
+</style>
+
+<style>
+#near{font-weight:700;border:1px solid #a9d6d2;transition:.2s ease}
+#near.is-on{color:#fff;background:var(--mint-deep);border-color:var(--mint-deep);}
 </style>
