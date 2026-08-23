@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; frame-src 'none'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://unpkg.com https://*.tile.openstreetmap.org; connect-src 'self';">
 <title>Pinqle — 推しが行った場所MAP</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@700;800&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
@@ -325,7 +327,7 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
       </section></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><strong id="routeCount">0 / 10地点を選択</strong><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
   <main id="map"></main>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 let all=[], markers=[], userPos=null, selected=[], scheduleReady=false;
 const map=L.map('map').setView([35.6812,139.7671],11);
@@ -347,6 +349,12 @@ fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
 });
 
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function safeUrl(value){
+  try{
+    const url=new URL(String(value??''),window.location.origin);
+    return ['https:','http:'].includes(url.protocol)?url.href:'';
+  }catch{return '';}
+}
 function filtered(){
   const q=searchEl.value.trim().toLowerCase(), g=groupEl.value, member=memberEl.value, c=categoryEl.value;
   return all.filter(x=>{
@@ -366,6 +374,7 @@ function render(){
   rows.forEach(x=>{
     const m=L.marker([x.lat,x.lng]).addTo(map);
     const memberNames=(x.members||[x.member]).join(' / ');
+    const sourceUrl=safeUrl(x.source);
     m.bindPopup(`<b>${escapeHtml(x.name)}</b><br>${escapeHtml(x.group)} / ${escapeHtml(memberNames)}<br>${escapeHtml(x.category)}<br><small>${escapeHtml(x.description)}</small>`);
     markers.push(m);
     const card=document.createElement('article'); card.className='card'+(selected.includes(x.id)?' selected':'');
@@ -374,10 +383,10 @@ function render(){
       ${x.address?`<div class="address">📍 ${escapeHtml(x.address)}</div>`:''}
       <div class="desc">${escapeHtml(x.description)}</div>
       <div class="${x.verified?'verified':'unverified'}">${x.verified?'✓ 出典確認済み':'△ 非公式情報のため要確認'}</div>
-      ${x.verified&&x.source?`<a class="source" href="${escapeHtml(x.source)}" target="_self" onclick="event.stopPropagation()">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:x.verified&&x.sourceTitle?`<div class="source source-text">出典：${escapeHtml(x.sourceTitle)}</div>`:''}`;
+      ${x.verified&&sourceUrl?`<a class="source" href="${escapeHtml(sourceUrl)}" target="_self" rel="noopener">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:x.verified&&x.sourceTitle?`<div class="source source-text">出典：${escapeHtml(x.sourceTitle)}</div>`:''}`;
     const row=document.createElement('div'); row.className='spot-row'+(selected.includes(x.id)?' selected':'');
     const pick=document.createElement('button'); pick.className='pick'; pick.type='button'; pick.setAttribute('aria-label',selected.includes(x.id)?'ルートから外す':'ルートに追加'); pick.textContent='✓';
-    card.onclick=()=>{map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
+    card.onclick=e=>{if(e.target.closest('.pick,.source'))return;map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
     pick.onclick=()=>togglePlace(x.id);
     row.append(pick,card); list.appendChild(row);
   });
