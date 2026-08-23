@@ -210,7 +210,7 @@ const memberEl=document.getElementById('member');
 const categoryEl=document.getElementById('category');
 const searchEl=document.getElementById('search');
 
-fetch('data.json').then(r=>r.json()).then(d=>{
+fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
   all=d;
   [...new Set(d.map(x=>x.group))].sort().forEach(x=>groupEl.insertAdjacentHTML('beforeend',`<option>${x}</option>`));
   [...new Set(d.flatMap(x=>x.members||[x.member]).filter(Boolean))].sort().forEach(x=>memberEl.insertAdjacentHTML('beforeend',`<option>${x}</option>`));
