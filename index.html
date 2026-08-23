@@ -436,19 +436,20 @@ function renderSchedule(ordered){
   document.getElementById('scheduleOrigin').textContent=(userPos?'現在地':'最初のスポット')+' 出発';
   const [hours,minutes]=document.getElementById('departureTime').value.split(':').map(Number);
   let clock=(Number.isFinite(hours)?hours:10)*60+(Number.isFinite(minutes)?minutes:0);
-  let previous=userPos, travelTotal=0, stayTotal=0;
+  let previous=userPos, previousName=userPos?'現在地':'', travelTotal=0, stayTotal=0;
   const rows=[];
   ordered.forEach((spot)=>{
     const travel=previous?travelEstimate(previous,spot):null;
     if(travel){
       const transportIcon=travel.label==='徒歩'?'🚶':'🚆';
-      rows.push('<li class="schedule-travel"><div class="travel-rail" aria-hidden="true"></div><div class="travel-detail"><span class="transport-icon">'+transportIcon+'</span>'+travel.label+' 約'+travel.minutes+'分</div></li>');
+      rows.push('<li class="schedule-travel"><div class="travel-rail" aria-hidden="true"></div><div class="travel-detail"><small class="travel-route">'+escapeHtml(previousName)+' → '+escapeHtml(spot.name)+'</small><span><span class="transport-icon">'+transportIcon+'</span>'+travel.label+' 約'+travel.minutes+'分</span></div></li>');
     }
     clock+=travel?.minutes||0; travelTotal+=travel?.minutes||0;
     const arrive=clock, stay=stayMinutes(spot);
     clock+=stay; stayTotal+=stay;
     rows.push('<li class="schedule-stop"><time>'+formatTime(arrive)+'</time><div><strong>'+escapeHtml(spot.name)+'</strong><span>'+spot.category+'で約'+stay+'分</span><small>'+formatTime(arrive)+'〜'+formatTime(clock)+'</small></div></li>');
     previous=spot;
+    previousName=spot.name;
   });
   summary.hidden=true; summary.textContent='';
   timeline.innerHTML=rows.join('');
@@ -543,4 +544,9 @@ document.getElementById('near').onclick=()=>{
 .schedule-travel .travel-rail{width:20px;justify-self:start;background:radial-gradient(circle,#d5e6e3 2px,transparent 3px) 17px 0/6px 9px repeat-y;}
 .schedule-travel .travel-detail{align-self:center;color:#718f8b;font-size:10px;font-weight:700;line-height:1.35;}
 .schedule-travel .transport-icon{display:inline-block;margin-right:4px;font-size:12px;filter:grayscale(.3);}
+</style>
+
+<style>
+.schedule-travel .travel-detail{display:flex;flex-direction:column;gap:1px;}
+.schedule-travel .travel-route{color:#4f7e7b;font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
