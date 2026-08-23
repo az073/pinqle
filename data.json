@@ -10,7 +10,6 @@
     "lat": 35.694632,
     "lng": 139.700549,
     "description": "RIWOOの公式東京Vlogで牛かつを食べた店舗。",
-    "source": "https://twitter.com/BOYNEXTDOOR_KOZ/status/1812440938385629471",
     "sourceTitle": "BOYNEXTDOOR公式X｜RIWOO 東京Vlog告知（YouTube動画は現在非公開）",
     "verified": true
   },
@@ -25,7 +24,6 @@
     "lat": 35.69865,
     "lng": 139.77421,
     "description": "RIWOOの公式東京Vlogでバッティングを楽しんだ施設。",
-    "source": "https://twitter.com/BOYNEXTDOOR_KOZ/status/1812440938385629471",
     "sourceTitle": "BOYNEXTDOOR公式X｜RIWOO 東京Vlog告知（YouTube動画は現在非公開）",
     "verified": true
   },
@@ -40,14 +38,17 @@
     "lat": 35.698341,
     "lng": 139.774776,
     "description": "RIWOOの公式東京Vlogでデザートを楽しんだ店舗。",
-    "source": "https://twitter.com/BOYNEXTDOOR_KOZ/status/1812440938385629471",
     "sourceTitle": "BOYNEXTDOOR公式X｜RIWOO 東京Vlog告知（YouTube動画は現在非公開）",
     "verified": true
   },
   {
     "id": 4,
     "group": "BOYNEXTDOOR",
-    "members": ["JAEHYUN", "RIWOO", "WOONHAK"],
+    "members": [
+      "JAEHYUN",
+      "RIWOO",
+      "WOONHAK"
+    ],
     "name": "珈琲 高円寺茶房",
     "category": "カフェ",
     "area": "東京・高円寺",
@@ -62,7 +63,11 @@
   {
     "id": 5,
     "group": "BOYNEXTDOOR",
-    "members": ["JAEHYUN", "RIWOO", "WOONHAK"],
+    "members": [
+      "JAEHYUN",
+      "RIWOO",
+      "WOONHAK"
+    ],
     "name": "大阪たこ焼き じゅげむ 高円寺店",
     "category": "飲食店",
     "area": "東京・高円寺",
@@ -77,7 +82,11 @@
   {
     "id": 6,
     "group": "BOYNEXTDOOR",
-    "members": ["SUNGHO", "TAESAN", "LEEHAN"],
+    "members": [
+      "SUNGHO",
+      "TAESAN",
+      "LEEHAN"
+    ],
     "name": "箱根湯寮",
     "category": "温泉",
     "area": "神奈川・箱根",
@@ -137,7 +146,11 @@
   {
     "id": 10,
     "group": "BOYNEXTDOOR",
-    "members": ["JAEHYUN", "RIWOO", "WOONHAK"],
+    "members": [
+      "JAEHYUN",
+      "RIWOO",
+      "WOONHAK"
+    ],
     "name": "カプセル楽局 高円寺店",
     "category": "ショップ",
     "area": "東京・高円寺",
@@ -152,7 +165,11 @@
   {
     "id": 11,
     "group": "BOYNEXTDOOR",
-    "members": ["JAEHYUN", "RIWOO", "WOONHAK"],
+    "members": [
+      "JAEHYUN",
+      "RIWOO",
+      "WOONHAK"
+    ],
     "name": "Belphegol",
     "category": "ショップ",
     "area": "東京・高円寺",
@@ -167,7 +184,14 @@
   {
     "id": 12,
     "group": "BOYNEXTDOOR",
-    "members": ["SUNGHO", "JAEHYUN", "RIWOO", "TAESAN", "LEEHAN", "WOONHAK"],
+    "members": [
+      "SUNGHO",
+      "JAEHYUN",
+      "RIWOO",
+      "TAESAN",
+      "LEEHAN",
+      "WOONHAK"
+    ],
     "name": "天空橋駅",
     "category": "撮影地",
     "area": "東京・羽田",
