@@ -322,7 +322,7 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
-      </section></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><strong id="routeCount">0 / 5地点を選択</strong><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
+      </section></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><strong id="routeCount">0 / 10地点を選択</strong><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
   <main id="map"></main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -384,13 +384,13 @@ function render(){
 }
 function togglePlace(id){
   if(selected.includes(id)) selected=selected.filter(x=>x!==id);
-  else if(selected.length<5) selected=[...selected,id];
-  else {alert('選択できるのは5地点までです。');return;}
+  else if(selected.length<10) selected=[...selected,id];
+  else {alert('選択できるのは10地点までです。');return;}
   scheduleReady=false;
   updateRoute();render();
 }
 function updateRoute(){
-  document.getElementById('routeCount').textContent=selected.length+' / 5地点を選択';
+  document.getElementById('routeCount').textContent=selected.length+' / 10地点を選択';
   document.getElementById('buildSchedule').disabled=selected.length<1;
   document.getElementById('clearRoute').disabled=!selected.length;
   if(!selected.length||!scheduleReady)renderSchedule([]);
