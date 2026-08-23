@@ -222,6 +222,11 @@ aside{min-height:0;display:flex;flex-direction:column}
 .card a.source.source{display:inline-block!important}
 .card .source-text{display:block}
 </style>
+
+<style>
+/* Align linked and plain sources consistently */
+.card .verified + a.source.source,.card .unverified + a.source.source{display:block!important;width:fit-content;margin-top:0}
+</style>
 </head>
 <body>
 <header>
