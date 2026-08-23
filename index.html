@@ -320,7 +320,7 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
 </header>
 <div class="layout">
   <aside><div class="routebar"><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><section id="schedule" class="schedule" hidden aria-live="polite">
-        <div class="schedule-head"><strong id="scheduleOrigin">現在地</strong><label>出発 <input id="departureTime" type="time"></label></div>
+        <div class="schedule-head"><strong id="scheduleOrigin">現在地 出発</strong><label><input id="departureTime" type="time" aria-label="出発時刻"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
@@ -433,7 +433,7 @@ function renderSchedule(ordered){
   const timeline=document.getElementById('scheduleTimeline');
   if(!ordered.length){box.hidden=true;timeline.innerHTML='';return;}
   box.hidden=false;
-  document.getElementById('scheduleOrigin').textContent=userPos?'現在地':'最初のスポット';
+  document.getElementById('scheduleOrigin').textContent=(userPos?'現在地':'最初のスポット')+' 出発';
   const [hours,minutes]=document.getElementById('departureTime').value.split(':').map(Number);
   let clock=(Number.isFinite(hours)?hours:10)*60+(Number.isFinite(minutes)?minutes:0);
   let previous=userPos, travelTotal=0, stayTotal=0;
