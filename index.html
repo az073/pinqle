@@ -266,6 +266,15 @@ aside{min-height:0;display:flex;flex-direction:column}
 <style>
 aside > .count{flex:none;margin:4px 7px 8px;padding:0}
 </style>
+
+<style>
+.list-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none;margin:4px 7px 8px}
+.list-toolbar .count{margin:0;padding:0}
+.list-toolbar #clearRoute{height:29px;padding:0 10px;font-size:9px}
+@media(max-width:760px){
+  .list-toolbar{margin:3px 4px 6px}
+}
+</style>
 </head>
 <body>
 <header>
@@ -280,12 +289,12 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
   </div>
 </header>
 <div class="layout">
-  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
+  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><section id="schedule" class="schedule" hidden aria-live="polite">
         <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
-      </section><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div id="listCount" class="count">0件のスポット</div><div id="list"></div></aside>
+      </section><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
   <main id="map"></main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
