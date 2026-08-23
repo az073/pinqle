@@ -387,7 +387,8 @@ function render(){
       <div class="${x.verified?'verified':'unverified'}">${x.verified?'✓ 出典確認済み':'△ 非公式情報のため要確認'}</div>
       ${x.verified&&sourceUrl?`<a class="source" href="${escapeHtml(sourceUrl)}" target="_self" rel="noopener">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:x.verified&&x.sourceTitle?`<div class="source source-text">出典：${escapeHtml(x.sourceTitle)}</div>`:''}`;
     const row=document.createElement('div'); row.className='spot-row'+(selected.includes(x.id)?' selected':'');
-    const pick=document.createElement('button'); pick.className='pick'; pick.type='button'; pick.setAttribute('aria-label',selected.includes(x.id)?'ルートから外す':'ルートに追加'); pick.textContent='✓';
+    const isStartWithoutLocation=!userPos&&selected[0]===x.id;
+    const pick=document.createElement('button'); pick.className='pick'+(isStartWithoutLocation?' start':''); pick.type='button'; pick.setAttribute('aria-label',isStartWithoutLocation?'最初のスポット（ルートから外す）':selected.includes(x.id)?'ルートから外す':'ルートに追加'); pick.textContent=isStartWithoutLocation?'1':'✓';
     card.onclick=e=>{if(e.target.closest('.pick,.source'))return;map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
     pick.onclick=()=>togglePlace(x.id);
     row.append(pick,card); list.appendChild(row);
@@ -485,4 +486,8 @@ document.getElementById('near').onclick=()=>{
 <style>
 #near{font-weight:700;border:1px solid #a9d6d2;transition:.2s ease}
 #near.is-on{color:#fff;background:var(--mint-deep);border-color:var(--mint-deep);}
+</style>
+
+<style>
+.pick.start{font-size:12px;font-weight:800;}
 </style>
