@@ -210,6 +210,13 @@ aside{min-height:0;display:flex;flex-direction:column}
   .verified + .source,.unverified + .source{display:block;margin-top:0;line-height:1.1}
 }
 </style>
+
+<style>
+/* Keep source status and source text tightly stacked */
+.card .verified,.card .unverified{margin:2px 0 0;line-height:1.1}
+.card .source{display:block;margin:0;line-height:1.1}
+.card .verified + .source,.card .unverified + .source{margin-top:0}
+</style>
 </head>
 <body>
 <header>
