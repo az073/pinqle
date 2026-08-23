@@ -350,8 +350,10 @@ fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
 
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function safeUrl(value){
+  const raw=String(value??'').trim();
+  if(!raw)return '';
   try{
-    const url=new URL(String(value??''),window.location.origin);
+    const url=new URL(raw,window.location.origin);
     return ['https:','http:'].includes(url.protocol)?url.href:'';
   }catch{return '';}
 }
@@ -455,3 +457,8 @@ document.getElementById('near').onclick=()=>{
 </script>
 </body>
 </html>
+
+<style>
+/* 出典URLがない場合はリンク風の下線を表示しない */
+.card .source.source-text{border-bottom:0!important;text-decoration:none!important;}
+</style>
