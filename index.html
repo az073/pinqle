@@ -245,7 +245,7 @@ function render(){
       ${x.address?`<div class="address">📍 ${escapeHtml(x.address)}</div>`:''}
       <div class="desc">${escapeHtml(x.description)}</div>
       <div class="${x.verified?'verified':'unverified'}">${x.verified?'✓ 出典確認済み':'△ 非公式情報のため要確認'}</div>
-      ${x.verified&&x.source?`<a class="source" href="${escapeHtml(x.source)}" target="_self" onclick="event.stopPropagation()">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:''}`;
+      ${x.verified&&x.source?`<a class="source" href="${escapeHtml(x.source)}" target="_self" onclick="event.stopPropagation()">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:x.verified&&x.sourceTitle?`<div class="source source-text">出典：${escapeHtml(x.sourceTitle)}</div>`:''}`;
     card.onclick=e=>{if(e.target.closest('.pick'))return;map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
     card.querySelector('.pick').onclick=()=>togglePlace(x.id);
     list.appendChild(card);
