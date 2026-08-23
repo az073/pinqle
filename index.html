@@ -263,8 +263,7 @@ aside{min-height:0;display:flex;flex-direction:column}
   </div>
 </header>
 <div class="layout">
-  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="openRoute" class="primary" disabled>Google Mapsでルートを開く</button><button id="clearRoute" disabled>選択解除</button><span id="suggestion" class="suggestion"></span>
-      <section id="schedule" class="schedule" hidden aria-live="polite">
+  <aside><div class="routebar"><strong id="routeCount">0 / 5地点を選択</strong><button id="openRoute" class="primary" disabled>Google Mapsでルートを開く</button><button id="clearRoute" disabled>選択解除</button><section id="schedule" class="schedule" hidden aria-live="polite">
         <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time" value="10:00"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
@@ -336,11 +335,8 @@ function updateRoute(){
   document.getElementById('routeCount').textContent=selected.length+' / 5地点を選択';
   document.getElementById('openRoute').disabled=selected.length<1;
   document.getElementById('clearRoute').disabled=!selected.length;
-  const el=document.getElementById('suggestion');
-  if(selected.length<1){el.textContent='';renderSchedule([]);return;}
-  const ordered=routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean);
-  el.textContent='おすすめ巡回順\n'+ordered.map((x,i)=>(i+1)+'. '+x.name).join('\n');
-  renderSchedule(ordered);
+  if(selected.length<1){renderSchedule([]);return;}
+  renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));
 }
 function formatTime(minutes){
   const day=Math.floor(minutes/1440), clock=minutes%1440;
