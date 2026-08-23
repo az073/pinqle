@@ -440,10 +440,14 @@ function renderSchedule(ordered){
   const rows=[];
   ordered.forEach((spot)=>{
     const travel=previous?travelEstimate(previous,spot):null;
+    if(travel){
+      const transportIcon=travel.label==='徒歩'?'🚶':'🚆';
+      rows.push('<li class="schedule-travel"><div class="travel-rail" aria-hidden="true"></div><div class="travel-detail"><span class="transport-icon">'+transportIcon+'</span>'+travel.label+' 約'+travel.minutes+'分</div></li>');
+    }
     clock+=travel?.minutes||0; travelTotal+=travel?.minutes||0;
     const arrive=clock, stay=stayMinutes(spot);
     clock+=stay; stayTotal+=stay;
-    rows.push('<li><time>'+formatTime(arrive)+'</time><div><strong>'+escapeHtml(spot.name)+'</strong><span>'+(travel?travel.label+' 約'+travel.minutes+'分 ・ ':'')+spot.category+'で約'+stay+'分</span><small>'+formatTime(arrive)+'〜'+formatTime(clock)+'</small></div></li>');
+    rows.push('<li class="schedule-stop"><time>'+formatTime(arrive)+'</time><div><strong>'+escapeHtml(spot.name)+'</strong><span>'+spot.category+'で約'+stay+'分</span><small>'+formatTime(arrive)+'〜'+formatTime(clock)+'</small></div></li>');
     previous=spot;
   });
   summary.hidden=true; summary.textContent='';
@@ -530,4 +534,13 @@ document.getElementById('near').onclick=()=>{
 .map-column .map-notice{margin:0;padding:0 2px;line-height:1.4;}
 .map-column #map{flex:1;height:auto;min-height:0;}
 @media(max-width:760px){.map-column #map{height:clamp(300px,44svh,440px);flex:none;}}
+</style>
+
+<style>
+.schedule-timeline{gap:0;}
+.schedule-timeline li.schedule-stop{margin:0;padding:7px 0 2px;border-top:1px dashed #c9dedb;}
+.schedule-timeline li.schedule-travel{display:grid;grid-template-columns:40px 1fr;gap:8px;margin:0;padding:3px 0 3px;border:0;min-height:27px;}
+.schedule-travel .travel-rail{width:20px;justify-self:start;background:radial-gradient(circle,#d5e6e3 2px,transparent 3px) 17px 0/6px 9px repeat-y;}
+.schedule-travel .travel-detail{align-self:center;color:#718f8b;font-size:10px;font-weight:700;line-height:1.35;}
+.schedule-travel .transport-icon{display:inline-block;margin-right:4px;font-size:12px;filter:grayscale(.3);}
 </style>
