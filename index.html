@@ -275,6 +275,17 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
   .list-toolbar{margin:3px 4px 6px}
 }
 </style>
+
+<style>
+.spot-row{position:relative;padding-left:27px;margin:0 0 6px}
+.spot-row .card{margin:0 2px 0 0}
+.spot-row .pick{position:absolute;z-index:2;left:0;top:12px;display:grid;place-items:center;width:22px;height:22px;padding:0;border:1px solid #9fc9c4;border-radius:50%;background:#fff;color:#9fc9c4;font-size:13px;line-height:1;box-shadow:none}
+.spot-row.selected .pick{background:#d889aa;border-color:#d889aa;color:#fff}
+@media(max-width:760px){
+  .spot-row{padding-left:25px;margin-bottom:6px}
+  .spot-row .pick{top:10px;width:21px;height:21px;font-size:12px}
+}
+</style>
 </head>
 <body>
 <header>
@@ -341,15 +352,17 @@ function render(){
     m.bindPopup(`<b>${escapeHtml(x.name)}</b><br>${escapeHtml(x.group)} / ${escapeHtml(memberNames)}<br>${escapeHtml(x.category)}<br><small>${escapeHtml(x.description)}</small>`);
     markers.push(m);
     const card=document.createElement('article'); card.className='card'+(selected.includes(x.id)?' selected':'');
-    card.innerHTML=`<div class="cardhead"><div><span class="tag">${escapeHtml(x.group)}</span><span class="tag">${escapeHtml(x.category)}</span></div><button class="pick" type="button">${selected.includes(x.id)?'選択済み':'ルートに追加'}</button></div>
+    card.innerHTML=`<div class="cardhead"><div><span class="tag">${escapeHtml(x.group)}</span><span class="tag">${escapeHtml(x.category)}</span></div></div>
       <h3>${escapeHtml(x.name)}</h3><div class="meta">${escapeHtml(memberNames)} ・ ${escapeHtml(x.area)}</div>
       ${x.address?`<div class="address">📍 ${escapeHtml(x.address)}</div>`:''}
       <div class="desc">${escapeHtml(x.description)}</div>
       <div class="${x.verified?'verified':'unverified'}">${x.verified?'✓ 出典確認済み':'△ 非公式情報のため要確認'}</div>
       ${x.verified&&x.source?`<a class="source" href="${escapeHtml(x.source)}" target="_self" onclick="event.stopPropagation()">出典：${escapeHtml(x.sourceTitle||'リンクを開く')} →</a>`:x.verified&&x.sourceTitle?`<div class="source source-text">出典：${escapeHtml(x.sourceTitle)}</div>`:''}`;
-    card.onclick=e=>{if(e.target.closest('.pick'))return;map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
-    card.querySelector('.pick').onclick=()=>togglePlace(x.id);
-    list.appendChild(card);
+    const row=document.createElement('div'); row.className='spot-row'+(selected.includes(x.id)?' selected':'');
+    const pick=document.createElement('button'); pick.className='pick'; pick.type='button'; pick.setAttribute('aria-label',selected.includes(x.id)?'ルートから外す':'ルートに追加'); pick.textContent='✓';
+    card.onclick=()=>{map.flyTo([x.lat,x.lng],16,{duration:.35});setTimeout(()=>m.openPopup(),380);};
+    pick.onclick=()=>togglePlace(x.id);
+    row.append(pick,card); list.appendChild(row);
   });
 }
 function togglePlace(id){
