@@ -319,13 +319,13 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
   </div>
 </header>
 <div class="layout">
-  <aside><div class="routebar"><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><section id="schedule" class="schedule" hidden aria-live="polite">
+  <aside><div class="routebar"><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><section id="schedule" class="schedule" hidden aria-live="polite">
         <div class="schedule-head"><label><input id="departureTime" type="time" aria-label="出発時刻"></label><strong id="scheduleOrigin">現在地 出発</strong></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
       </section></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><strong id="routeCount">0 / 10地点を選択</strong><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
-  <main id="map"></main>
+  <div class="map-column"><span class="notice map-notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span><main id="map"></main></div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
@@ -523,4 +523,11 @@ document.getElementById('near').onclick=()=>{
 
 <style>
 #departureTime,#departureTime::-webkit-datetime-edit{font-size:12px!important;}
+</style>
+
+<style>
+.map-column{min-width:0;min-height:0;display:flex;flex-direction:column;gap:6px;}
+.map-column .map-notice{margin:0;padding:0 2px;line-height:1.4;}
+.map-column #map{flex:1;height:auto;min-height:0;}
+@media(max-width:760px){.map-column #map{height:clamp(300px,44svh,440px);flex:none;}}
 </style>
