@@ -452,7 +452,12 @@ document.getElementById('buildSchedule').onclick=()=>{if(!selected.length)return
 document.getElementById('clearRoute').onclick=()=>{selected=[];scheduleReady=false;updateRoute();render();};
 document.getElementById('near').onclick=()=>{
   if(!navigator.geolocation){alert('位置情報に対応していません');return;}
-  navigator.geolocation.getCurrentPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};scheduleReady=false;updateRoute();render();map.setView([userPos.lat,userPos.lng],13);},()=>alert('位置情報を取得できませんでした。'));
+  navigator.geolocation.getCurrentPosition(p=>{
+    const wasShowingSchedule=scheduleReady;
+    userPos={lat:p.coords.latitude,lng:p.coords.longitude};
+    updateRoute();render();map.setView([userPos.lat,userPos.lng],13);
+    if(wasShowingSchedule&&selected.length)renderSchedule(routeOrder().map(id=>all.find(x=>x.id===id)).filter(Boolean));
+  },()=>alert('位置情報を取得できませんでした。'));
 };
 </script>
 </body>
