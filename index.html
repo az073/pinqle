@@ -310,12 +310,12 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
   </div>
 </header>
 <div class="layout">
-  <aside><div class="routebar"><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><section id="schedule" class="schedule" hidden aria-live="polite">
+  <aside><div class="routebar"><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span><button id="buildSchedule" class="primary" disabled>おすすめルートを出す</button><section id="schedule" class="schedule" hidden aria-live="polite">
         <div class="schedule-head"><strong>概算スケジュール</strong><label>出発 <input id="departureTime" type="time"></label></div>
         <div id="scheduleSummary" class="schedule-summary"></div>
         <ol id="scheduleTimeline" class="schedule-timeline"></ol>
         <p class="schedule-note">近距離は徒歩、離れた区間は電車・徒歩で見積もった概算です。実際の乗換・混雑・営業時間は含まれません。</p>
-      </section><span class="notice">※営業時間・定休日・利用条件は変更される場合があります。ご来店前に各店舗・施設の公式情報をご確認のうえ、撮影や入店の際は各店舗・施設のルールをお守りください。</span></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><strong id="routeCount">0 / 5地点を選択</strong><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
+      </section></div><div class="list-toolbar"><button id="clearRoute" disabled>選択解除</button><strong id="routeCount">0 / 5地点を選択</strong><div id="listCount" class="count">0件のスポット</div></div><div id="list"></div></aside>
   <main id="map"></main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
