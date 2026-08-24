@@ -54,6 +54,7 @@ body{font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-
 header{padding:20px 28px 17px;background:rgba(255,249,252,.94);border-bottom:0}
 .logo{justify-content:center;gap:10px;font-family:"Comfortaa","Nunito","Zen Maru Gothic",sans-serif;font-size:21px;font-weight:700;color:var(--mint-deep);letter-spacing:.12em}
 .logo:before{display:none}
+.logo-tagline{font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;font-size:12px;font-weight:500;letter-spacing:.06em;color:#7ea09d;white-space:nowrap}
 .sub{text-align:center;margin:3px 0 0;color:#7ea09d;font-size:10px;letter-spacing:.13em}
 .controls{justify-content:center;gap:9px;margin:17px auto 0;max-width:1180px}
 .controls input{order:5}
@@ -110,7 +111,8 @@ aside{min-height:0;display:flex;flex-direction:column}
 @media (max-width:760px){
   body{background-size:22px 22px;background-position:0 0}
   header{padding:14px 14px 12px}
-  .logo{font-size:20px}
+  .logo{font-size:20px;gap:7px}
+  .logo-tagline{font-size:10px;letter-spacing:.02em}
   .sub{margin:4px 0 0;font-size:10px}
   .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px;padding:0}
   .controls input{grid-column:1 / -1;width:100%;min-width:0;height:44px}
@@ -308,7 +310,7 @@ aside > .count{flex:none;margin:4px 7px 8px;padding:0}
 </head>
 <body>
 <header>
-  <div class="logo">Pinqle</div>
+  <div class="logo">Pinqle <span class="logo-tagline">- 聖地巡礼スケジューラー -</span></div>
   <div class="sub">推しの足跡をつなぐ旅</div>
   <div class="controls">
     <input id="search" placeholder="店名・場所・メンバーで検索">
